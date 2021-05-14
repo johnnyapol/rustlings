@@ -11,7 +11,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -23,9 +22,45 @@ struct Person {
 // 5. If while extracting the name and the age something goes wrong, an error should be returned
 // If everything goes well, then return a Result of a Person object
 
+
+fn helper(s: &str) -> Result<Person, &'static str>
+{
+    let mut split = s.split(",");
+    let name_split = split.next();
+    let age_split = split.next();
+
+    if (name_split.is_none() || age_split.is_none() || split.next().is_some())
+    {
+        return Err("Invalid string");   
+    }
+
+    let name = name_split.unwrap().to_string();
+
+    if (name.len() == 0)
+    {
+        return Err("Empty name");
+    }
+
+    let age_str = age_split.unwrap();
+    let age = age_str.parse::<usize>();
+
+    if (age.is_err()) {
+        return Err("Invalid age");
+    }
+
+    Ok(Person{name: name, age: age.unwrap() })
+}
+
+
 impl FromStr for Person {
-    type Err = Box<dyn error::Error>;
+    type Err = &'static str;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.len() == 0
+        {
+            return Err("Empty")
+        }
+
+        return helper(s);
     }
 }
 
