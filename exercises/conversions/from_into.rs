@@ -33,10 +33,51 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
+use std::error;
+
+fn helper(s: &str) -> Result<Person, &'static str>
+{
+    let mut split = s.split(",");
+    let name_split = split.next();
+    let age_split = split.next();
+
+    if (name_split.is_none() || age_split.is_none() || split.next().is_some())
+    {
+        return Err("Invalid string");   
+    }
+
+    let name = name_split.unwrap().to_string();
+
+    if (name.len() == 0)
+    {
+        return Err("Empty name");
+    }
+
+    let age_str = age_split.unwrap();
+    let age = age_str.parse::<usize>();
+
+    if (age.is_err()) {
+        return Err("Invalid age");
+    }
+
+    Ok(Person{name: name, age: age.unwrap() })
+}
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        if s.len() == 0
+        {
+            return Default::default();
+        }
+
+        let h = helper(s);
+
+        if h.is_ok()
+        {
+            return h.unwrap();
+        }
+
+        return Default::default();
     }
 }
 
